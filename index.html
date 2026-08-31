@@ -69,10 +69,13 @@
         </div>
     </div>
 
-    <!-- JavaScript Scripts -->
+<!-- JavaScript Scripts -->
     <script src="js/files.js"></script>
+    <script src="js/terminal.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/dino.js"></script>
 
-    <!-- Auto-Login & Bypass Dino Session Script -->
+    <!-- Auto-Login & Bypass Script -->
     <script>
         (function() {
             // Cek parameter ?dev=true di URL
@@ -81,27 +84,32 @@
                 localStorage.setItem('auth_session', 'true');
             }
 
-            // Kalo session la ada (pernah main dino/login sebelumnya), auto hide dino!
+            // Kalo session la ada (pernah login / mode dev):
             if (localStorage.getItem('auth_session') === 'true') {
+                // 1. Sembunyike overlay dino langsung
                 const style = document.createElement('style');
                 style.innerHTML = '#dino-overlay { display: none !important; }';
                 document.head.appendChild(style);
+
+                // 2. Tembak variabel currentUser & prompt pas JS selesai dimuat
+                window.addEventListener('DOMContentLoaded', () => {
+                    const overlay = document.getElementById('dino-overlay');
+                    if (overlay) overlay.style.display = 'none';
+
+                    // Set status login otomatis dadi 'guest'
+                    if (typeof currentUser !== 'undefined') {
+                        currentUser = "guest";
+                        if (typeof updatePrompt === 'function') {
+                            updatePrompt();
+                        }
+                    }
+
+                    // Langsung fokus ke input CLI
+                    const cliInput = document.getElementById('cli-input');
+                    if (cliInput) cliInput.focus();
+                });
             }
         })();
-    </script>
-
-    <script src="js/terminal.js"></script>
-    <script src="js/main.js"></script>
-    <script src="js/dino.js"></script>
-
-    <script>
-        // Setel session pas game dino selesai (10 lompatan)
-        document.addEventListener('DOMContentLoaded', () => {
-            if (localStorage.getItem('auth_session') === 'true') {
-                const overlay = document.getElementById('dino-overlay');
-                if (overlay) overlay.style.display = 'none';
-            }
-        });
     </script>
 </body>
 </html>
