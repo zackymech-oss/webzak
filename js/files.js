@@ -7,7 +7,8 @@ const fileSystem = {
         "2.jpeg"
     ],
     "link": [
-        "kabarbatam.url"
+        "kabarbatam.url",
+        "kutipanweb"
     ],
     "musik": [
         "1.mp3"
