@@ -70,10 +70,16 @@ jobs:
           git diff-index --quiet HEAD || git commit -m "auto: update index js/files.js [skip ci]"
           git push
 
-      - name: Upload to Pinata IPFS
-        uses: pinatacloud/pinata-github-action@v1.0.1
-        with:
-          pinata-key: ${{ secrets.PINATA_API_KEY }}
-          pinata-secret: ${{ secrets.PINATA_SECRET_KEY }}
-          path-to-upload: '.'
-          pin-name: 'webzak-build'
+      - name: Zip Web Folder
+        run: |
+          zip -r web-build.zip index.html js/ css/ home/ favicon.ico 2>/dev/null || zip -r web-build.zip index.html js/ home/
+
+      - name: Upload Zip to Pinata IPFS
+        run: |
+          RESPONSE=$(curl -X POST "https://api.pinata.cloud/pinning/pinFileToIPFS" \
+            -H "pinata_api_key: ${{ secrets.PINATA_API_KEY }}" \
+            -H "pinata_secret_api_key: ${{ secrets.PINATA_SECRET_KEY }}" \
+            -F "file=@web-build.zip" \
+            -F 'pinataMetadata={"name": "webzak-build"}' \
+            -F 'pinataOptions={"wrapWithDirectory": false}')
+          echo "Pinata Response: $RESPONSE"
