@@ -19,7 +19,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
 
       - name: Generate js/files.js
         run: |
@@ -73,6 +73,9 @@ jobs:
           git diff-index --quiet HEAD || git commit -m "auto: update index js/files.js [skip ci]"
           git push
 
+      - name: Install Form-Data
+        run: npm install form-data
+
       - name: Upload Directory to Pinata IPFS
         env:
           PINATA_KEY: ${{ secrets.PINATA_API_KEY }}
@@ -84,7 +87,6 @@ jobs:
           const http = require("https");
           const FormData = require("form-data");
 
-          // Upload folder langsung ke Pinata via API
           async function uploadFolder() {
             const files = [];
             function walk(dir) {
