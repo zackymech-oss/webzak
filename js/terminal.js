@@ -191,6 +191,22 @@ function executeCommand(cmd, args, fullInput) {
 `);
             break;
 
+case "bio":
+            if (typeof window.getBioOutput === 'function') {
+                printOutput(window.getBioOutput());
+            } else {
+                printOutput("Error: Bio module not loaded.");
+            }
+            break;
+
+        case "skills":
+            if (typeof window.getSkillsOutput === 'function') {
+                printOutput(window.getSkillsOutput());
+            } else {
+                printOutput("Error: Skills module not loaded.");
+            }
+            break;
+            
         case "ls":
             if (currentPath.length === 0) {
                 let dirs = Object.keys(currentData || {});
