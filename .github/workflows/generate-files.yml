@@ -1,4 +1,4 @@
-name: Auto Build & Deploy to IPFS
+name: Auto Build & Deploy
 
 on:
   push:
@@ -10,7 +10,7 @@ permissions:
   contents: write
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -68,70 +68,7 @@ jobs:
       - name: Commit & Push Updated files.js
         run: |
           git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.email "github-actions[bot]"
           git add js/files.js
           git diff-index --quiet HEAD || git commit -m "auto: update index js/files.js [skip ci]"
           git push
-
-      - name: Install Form-Data
-        run: npm install form-data
-
-      - name: Upload Directory to Pinata IPFS
-        env:
-          PINATA_KEY: ${{ secrets.PINATA_API_KEY }}
-          PINATA_SECRET: ${{ secrets.PINATA_SECRET_KEY }}
-        run: |
-          node -e '
-          const fs = require("fs");
-          const path = require("path");
-          const http = require("https");
-          const FormData = require("form-data");
-
-          async function uploadFolder() {
-            const files = [];
-            function walk(dir) {
-              const list = fs.readdirSync(dir);
-              list.forEach(file => {
-                const filePath = path.join(dir, file);
-                const stat = fs.statSync(filePath);
-                if (stat && stat.isDirectory()) {
-                  if (!file.startsWith(".") && file !== "node_modules") walk(filePath);
-                } else {
-                  if (!file.startsWith(".")) files.push(filePath);
-                }
-              });
-            }
-            walk("./");
-
-            const formData = new FormData();
-            files.forEach(file => {
-              const relativePath = file.replace(/^\.\//, "");
-              formData.append("file", fs.createReadStream(file), {
-                filepath: `webzak-build/${relativePath}`
-              });
-            });
-
-            const metadata = JSON.stringify({ name: "webzak-build" });
-            formData.append("pinataMetadata", metadata);
-
-            const request = http.request({
-              method: "POST",
-              host: "api.pinata.cloud",
-              path: "/pinning/pinFileToIPFS",
-              headers: {
-                ...formData.getHeaders(),
-                pinata_api_key: process.env.PINATA_KEY,
-                pinata_secret_api_key: process.env.PINATA_SECRET
-              }
-            }, (res) => {
-              let data = "";
-              res.on("data", chunk => data += chunk);
-              res.on("end", () => {
-                console.log("Pinata Response:", data);
-              });
-            });
-
-            formData.pipe(request);
-          }
-          uploadFolder();
-          '
