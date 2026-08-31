@@ -75,41 +75,37 @@
     <script src="js/main.js"></script>
     <script src="js/dino.js"></script>
 
-    <!-- Auto-Login & Bypass Script -->
+<!-- Auto-Login & Bypass Session Script (Per Sesi) -->
     <script>
         (function() {
             // Cek parameter ?dev=true di URL
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('dev') === 'true') {
-                localStorage.setItem('auth_session', 'true');
+                sessionStorage.setItem('auth_session', 'true');
             }
 
-            // Kalo session la ada (pernah login / mode dev):
-            if (localStorage.getItem('auth_session') === 'true') {
-                // 1. Sembunyike overlay dino langsung
+            // Kalo session sesi ini la ada, sembunyikan dino
+            if (sessionStorage.getItem('auth_session') === 'true') {
                 const style = document.createElement('style');
                 style.innerHTML = '#dino-overlay { display: none !important; }';
                 document.head.appendChild(style);
-
-                // 2. Tembak variabel currentUser & prompt pas JS selesai dimuat
-                window.addEventListener('DOMContentLoaded', () => {
-                    const overlay = document.getElementById('dino-overlay');
-                    if (overlay) overlay.style.display = 'none';
-
-                    // Set status login otomatis dadi 'guest'
-                    if (typeof currentUser !== 'undefined') {
-                        currentUser = "guest";
-                        if (typeof updatePrompt === 'function') {
-                            updatePrompt();
-                        }
-                    }
-
-                    // Langsung fokus ke input CLI
-                    const cliInput = document.getElementById('cli-input');
-                    if (cliInput) cliInput.focus();
-                });
             }
         })();
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (sessionStorage.getItem('auth_session') === 'true') {
+                const overlay = document.getElementById('dino-overlay');
+                if (overlay) overlay.style.display = 'none';
+
+                if (typeof currentUser !== 'undefined') {
+                    currentUser = "guest";
+                    if (typeof updatePrompt === 'function') updatePrompt();
+                }
+
+                const cliInput = document.getElementById('cli-input');
+                if (cliInput) cliInput.focus();
+            }
+        });
     </script>
 </body>
 </html>
