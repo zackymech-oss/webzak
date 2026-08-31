@@ -83,15 +83,15 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 600);
     }
 
-// Event Listener Controls (Hanya cegah spasi KALAU overlay dino masih muncul)
-window.addEventListener("keydown", (e) => {
-    if (e.code === "Space") {
-        if (!isUnlocked) {
-            e.preventDefault(); // Matikan scroll/spasi cuma pas game dino aktif
-            handleAction();
+    // Event Listener Controls (Pindah ke Tombol Panah, Spasi Bebas untuk Ngetik)
+    window.addEventListener("keydown", (e) => {
+        if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) {
+            if (!isUnlocked) {
+                e.preventDefault(); // Matikan scroll panah pas game dino aktif
+                handleAction();
+            }
         }
-    }
-});
+    });
 
     canvas.addEventListener("touchstart", (e) => {
         e.preventDefault();
@@ -167,7 +167,7 @@ window.addEventListener("keydown", (e) => {
 
                 ctx.fillStyle = "#f1f3f4";
                 ctx.font = "12px monospace";
-                ctx.fillText("[ Tekan SPASI / TAP untuk Restart ]", canvas.width / 2, 85);
+                ctx.fillText("[ Tekan TOMBOL PANAH / TAP untuk Restart ]", canvas.width / 2, 85);
             }
             return;
         }
@@ -196,7 +196,7 @@ window.addEventListener("keydown", (e) => {
         // Render Dino
         drawDino(dino.x, dino.y);
 
-        // Spawn Kaktus (Tiap ~100-140 frame random)
+        // Spawn Kaktus (Tiap ~110 frame random)
         if (frame % 110 === 0) {
             spawnCactus();
         }
