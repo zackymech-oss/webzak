@@ -70,9 +70,8 @@ function handleLogin(input) {
     if (USERS[user] && USERS[user] === pass) {
         currentUser = user;
         
-        // --- TAMBAH BARIS INI BIAR INGAT SESSION LOGIN ---
-        localStorage.setItem('auth_session', 'true');
-        // ------------------------------------------------
+        // Simpan ke sessionStorage (otomatis ilang pas tab ditutup)
+        sessionStorage.setItem('auth_session', 'true');
 
         printOutput(`<span class="success">Access granted! Selamat datang di bangzaki.hub.</span>`);
         printOutput(`Ketik '<span class="system">help</span>' untuk panduan perintah.\n`);
