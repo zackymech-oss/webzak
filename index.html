@@ -14,7 +14,7 @@
     <meta property="og:type" content="website">
     <meta property="og:title" content="Bang Zaki | System Node & Infrastructure Directory">
     <meta property="og:description" content="Public directory and system node for Bang Zaki. Managed terminal environment for technical projects and documentation.">
-    <meta property="og:url" content="https://bangzaki.hub">
+    <meta property="og:url" content="https://omzaki.com">
     <meta property="og:image" content="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1200&auto=format&fit=crop">
 
     <!-- Favicon -->
@@ -45,7 +45,7 @@
                 <span class="btn minimize"></span>
                 <span class="btn maximize"></span>
             </div>
-            <div class="title">guest@bangzaki.hub:~ (ssh)</div>
+            <div class="title">guest@omzaki.com:~ (ssh)</div>
         </div>
 
         <!-- Body Terminal -->
@@ -71,9 +71,37 @@
 
     <!-- JavaScript Scripts -->
     <script src="js/files.js"></script>
+
+    <!-- Auto-Login & Bypass Dino Session Script -->
+    <script>
+        (function() {
+            // Cek parameter ?dev=true di URL
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('dev') === 'true') {
+                localStorage.setItem('auth_session', 'true');
+            }
+
+            // Kalo session la ada (pernah main dino/login sebelumnya), auto hide dino!
+            if (localStorage.getItem('auth_session') === 'true') {
+                const style = document.createElement('style');
+                style.innerHTML = '#dino-overlay { display: none !important; }';
+                document.head.appendChild(style);
+            }
+        })();
+    </script>
+
     <script src="js/terminal.js"></script>
     <script src="js/main.js"></script>
     <script src="js/dino.js"></script>
-    
+
+    <script>
+        // Setel session pas game dino selesai (10 lompatan)
+        document.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('auth_session') === 'true') {
+                const overlay = document.getElementById('dino-overlay');
+                if (overlay) overlay.style.display = 'none';
+            }
+        });
+    </script>
 </body>
 </html>
