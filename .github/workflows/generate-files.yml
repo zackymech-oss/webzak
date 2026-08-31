@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'home/**'
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
@@ -69,10 +70,10 @@ jobs:
           git diff-index --quiet HEAD || git commit -m "auto: update index js/files.js [skip ci]"
           git push
 
-      - name: Deploy to IPFS via Pinata
-        uses: aquilax/ipfs-action@v0.3.0
+      - name: Upload to Pinata IPFS
+        uses: pinatacloud/pinata-github-action@v1.0.1
         with:
-          path: '.'
-          service: pinata
-          pinataKey: ${{ secrets.PINATA_API_KEY }}
-          pinataSecret: ${{ secrets.PINATA_SECRET_KEY }}
+          pinata-key: ${{ secrets.PINATA_API_KEY }}
+          pinata-secret: ${{ secrets.PINATA_SECRET_KEY }}
+          path-to-upload: '.'
+          pin-name: 'webzak-build'
