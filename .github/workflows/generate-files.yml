@@ -1,4 +1,4 @@
-name: Auto Generate Files Index
+name: Auto Build & Deploy to IPFS
 
 on:
   push:
@@ -6,13 +6,11 @@ on:
       - 'home/**'
 
 jobs:
-  build-index:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
@@ -63,10 +61,18 @@ jobs:
           fs.writeFileSync("./js/files.js", output);
           '
 
-      - name: Commit & Push Updated files.js
+      - name: Commit Updated files.js
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add js/files.js
           git diff-index --quiet HEAD || git commit -m "auto: update index js/files.js [skip ci]"
           git push
+
+      - name: Deploy to IPFS via Pinata
+        uses: aquilax/ipfs-action@v0.3.0
+        with:
+          path: '.'
+          service: pinata
+          pinataKey: ${{ secrets.PINATA_API_KEY }}
+          pinataSecret: ${{ secrets.PINATA_SECRET_KEY }}
