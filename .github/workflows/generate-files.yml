@@ -18,6 +18,9 @@ jobs:
         with:
           node-version: '18'
 
+      - name: Install Pinata SDK
+        run: npm install --save-dev @pinata/sdk
+
       - name: Generate js/files.js
         run: |
           node -e '
@@ -70,16 +73,28 @@ jobs:
           git diff-index --quiet HEAD || git commit -m "auto: update index js/files.js [skip ci]"
           git push
 
-      - name: Zip Web Folder
+      - name: Deploy Folder Direct to Pinata
+        env:
+          PINATA_KEY: ${{ secrets.PINATA_API_KEY }}
+          PINATA_SECRET: ${{ secrets.PINATA_SECRET_KEY }}
         run: |
-          zip -r web-build.zip index.html js/ css/ home/ favicon.ico 2>/dev/null || zip -r web-build.zip index.html js/ home/
+          node -e '
+          const pinataSDK = require("@pinata/sdk");
+          const pinata = new pinataSDK(process.env.PINATA_KEY, process.env.PINATA_SECRET);
 
-      - name: Upload Zip to Pinata IPFS
-        run: |
-          RESPONSE=$(curl -X POST "https://api.pinata.cloud/pinning/pinFileToIPFS" \
-            -H "pinata_api_key: ${{ secrets.PINATA_API_KEY }}" \
-            -H "pinata_secret_api_key: ${{ secrets.PINATA_SECRET_KEY }}" \
-            -F "file=@web-build.zip" \
-            -F 'pinataMetadata={"name": "webzak-build"}' \
-            -F 'pinataOptions={"wrapWithDirectory": false}')
-          echo "Pinata Response: $RESPONSE"
+          const options = {
+              pinataMetadata: {
+                  name: "webzak-build"
+              },
+              pinataOptions: {
+                  cidVersion: 0
+              }
+          };
+
+          pinata.pinFromFS("./", options).then((result) => {
+              console.log("SUCCESS_CID:" + result.IpfsHash);
+          }).catch((err) => {
+              console.error(err);
+              process.exit(1);
+          });
+          '
