@@ -71,76 +71,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function handleMediaCommand(type) {
         if (window.getMediaElement) {
-            // Buat modal overlay fullscreen khusus mobile/desktop
-            let existingModal = document.getElementById("media-modal-overlay");
-            if (existingModal) existingModal.remove();
-
-            const overlay = document.createElement("div");
-            overlay.id = "media-modal-overlay";
-            overlay.style.cssText = `
-                position: fixed;
-                top: 0; left: 0; width: 100vw; height: 100vh;
-                background: rgba(13, 17, 23, 0.92);
-                backdrop-filter: blur(10px);
-                z-index: 99999;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                padding: 15px;
-            `;
-
-            const modalContent = document.createElement("div");
-            modalContent.style.cssText = `
-                width: 100%;
-                max-width: 600px;
-                background: #161b22;
-                border: 1px solid rgba(88, 166, 255, 0.3);
-                border-radius: 8px;
-                overflow: hidden;
-                box-shadow: 0 25px 50px rgba(0,0,0,0.8);
-            `;
-
-            const header = document.createElement("div");
-            header.style.cssText = `
-                background: #1f242c;
-                padding: 12px 16px;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                border-bottom: 1px solid rgba(48, 54, 61, 0.8);
-                color: #8b949e;
-                font-size: 12px;
-                font-family: 'JetBrains Mono', monospace;
-            `;
-            header.innerHTML = `<span>MEDIA BUFFER // ${type.toUpperCase()}</span>`;
-
-            const closeBtn = document.createElement("span");
-            closeBtn.textContent = "[X CLOSE]";
-            closeBtn.style.cssText = "color: #ff7b72; cursor: pointer; font-weight: bold;";
-            closeBtn.onclick = () => overlay.remove();
-            header.appendChild(closeBtn);
-
-            const body = document.createElement("div");
-            body.style.cssText = "padding: 15px; background: #0d1117;";
-            
             const el = window.getMediaElement(type);
             if (el) {
-                body.appendChild(el);
+                // Atur gaya elemen biar lepek dan pas selebar terminal
+                el.style.cssText = "width: 100%; max-width: 100%; margin: 10px 0; border-radius: 4px; display: block;";
+                
+                // Konversi elemen jadi string HTML buat dimasukin lgsg ke output terminal
+                const wrapper = document.createElement("div");
+                wrapper.appendChild(el);
+                return "\x1b[1;32m[OK]: Output buffer stream attached.\x1b[0m\n" + wrapper.innerHTML + "\n";
             }
-
-            modalContent.appendChild(header);
-            modalContent.appendChild(body);
-            overlay.appendChild(modalContent);
-            document.body.appendChild(overlay);
-
-            // Klik di luar modal buat close
-            overlay.onclick = (e) => {
-                if (e.target === overlay) overlay.remove();
-            };
-
-            return "\x1b[1;32m[OK]: Media loaded in overlay mode.\x1b[0m\n";
         }
-        return "\x1b[1;31m[ERROR]: Media module missing.\x1b[0m\n";
+        return "\x1b[1;31m[ERROR]: Media stream not found.\x1b[0m\n";
 }
 
     function ansiToHtml(text) {
