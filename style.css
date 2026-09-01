@@ -259,24 +259,47 @@ body::before {
 .media-img-wrapper img { width: 100%; height: auto; border-radius: 4px; display: block; }
 .media-audio-wrapper audio { width: 100%; outline: none; }
 
+/* Perbaikan Total Layout Mobile Full Screen */
 @media screen and (max-width: 768px) {
     html, body {
-        height: 100%;
-        height: 100dvh; /* Mengikuti dynamic viewport height HP */
-        overflow: hidden;
-        position: fixed;
         width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background-color: #0b0c10;
+    }
+
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 
     .terminal-container {
+        position: relative !important;
         width: 100vw !important;
-        height: 100dvh !important;
+        height: 100vh !important;
         max-width: 100% !important;
-        max-height: 100dvh !important;
+        max-height: 100% !important;
         border-radius: 0 !important;
         border: none !important;
-        position: absolute;
-        top: 0;
-        left: 0;
+        display: flex !important;
+        flex-direction: column !important;
+        margin: 0 !important;
+    }
+
+    .window-header {
+        flex-shrink: 0;
+    }
+
+    #output {
+        flex: 1 1 auto !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .input-line {
+        flex-shrink: 0;
     }
 }
