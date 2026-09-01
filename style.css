@@ -258,3 +258,24 @@ body::before {
 .media-iframe-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 .media-img-wrapper img { width: 100%; height: auto; border-radius: 4px; display: block; }
 .media-audio-wrapper audio { width: 100%; outline: none; }
+
+/* Tambahan Media Query untuk Mobile Full Screen */
+@media screen and (max-width: 768px) {
+    body {
+        height: 100vh;
+        overflow: hidden;
+    }
+    
+    .terminal-container {
+        width: 100vw !important;
+        height: 100vh !important;
+        max-width: 100% !important;
+        max-height: 100% !important;
+        border-radius: 0 !important;
+        border: none !important;
+    }
+
+    .window-header {
+        border-radius: 0 !important;
+    }
+}
