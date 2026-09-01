@@ -35,7 +35,7 @@ body::before {
 .terminal-container {
     width: 92vw;
     max-width: 960px;
-    height: 88vh;
+    height: 70vh;
     background: rgba(30, 41, 59, 0.88);    backdrop-filter: blur(14px);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
