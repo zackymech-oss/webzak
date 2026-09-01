@@ -259,23 +259,24 @@ body::before {
 .media-img-wrapper img { width: 100%; height: auto; border-radius: 4px; display: block; }
 .media-audio-wrapper audio { width: 100%; outline: none; }
 
-/* Tambahan Media Query untuk Mobile Full Screen */
 @media screen and (max-width: 768px) {
-    body {
-        height: 100vh;
+    html, body {
+        height: 100%;
+        height: 100dvh; /* Mengikuti dynamic viewport height HP */
         overflow: hidden;
-    }
-    
-    .terminal-container {
-        width: 100vw !important;
-        height: 100vh !important;
-        max-width: 100% !important;
-        max-height: 100% !important;
-        border-radius: 0 !important;
-        border: none !important;
+        position: fixed;
+        width: 100%;
     }
 
-    .window-header {
+    .terminal-container {
+        width: 100vw !important;
+        height: 100dvh !important;
+        max-width: 100% !important;
+        max-height: 100dvh !important;
         border-radius: 0 !important;
+        border: none !important;
+        position: absolute;
+        top: 0;
+        left: 0;
     }
 }
