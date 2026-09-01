@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZACKY // System Terminal</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="dino-overlay" class="dino-overlay">
+        <div class="dino-modal">
+            <div class="dino-header">
+                <span>SECURITY CHALLENGE // SYSTEM LOCK ACTIVE</span>
+                <span class="dino-target-info">Target: <span id="jump-count">0</span>/10 Jumps</span>
+            </div>
+            <div class="canvas-wrapper">
+                <canvas id="dinoCanvas" width="480" height="150"></canvas>
+            </div>
+            <div class="dino-footer">
+                Press <span class="key-badge">SPACE</span> or <span class="key-badge">TAP</span> to jump over incoming blocks. Reach 10 jumps to unlock terminal.
+            </div>
+        </div>
+    </div>
+
+    <div class="crt-overlay"></div>
+    
+    <div class="terminal-container">
+        <!-- Mac Window Header Bar -->
+        <div class="window-header">
+            <div class="window-dots">
+                <span class="dot red"></span>
+                <span class="dot yellow"></span>
+                <span class="dot green"></span>
+            </div>
+            <div class="window-title">guest@bangzaki.hub:~ (ssh)</div>
+        </div>
+
+        <div id="output"></div>
+        <div class="input-line">
+            <span class="prompt">guest@bangzaki.hub:~#</span>
+            <input type="text" id="command-input" autofocus autocomplete="off" spellcheck="false">
+        </div>
+    </div>
+
+    <!-- Modular Content Files -->
+    <script src="bio.js"></script>
+    <script src="skills.js"></script>
+    <script src="experience.js"></script>
+    <script src="project.js"></script>
+    <script src="contact.js"></script>
+    <script src="media.js"></script>
+    
+    <!-- Game & Terminal Engine -->
+    <script src="dino.js"></script>
+    <script src="terminal.js"></script>
+</body>
+</html>
