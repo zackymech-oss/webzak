@@ -35,6 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
         audio: () => handleMediaCommand("audio"),
         pdf: () => handleMediaCommand("pdf"),
         links: () => handleMediaCommand("links"),
+        mail: (args) => handleMailCommand(args),
 
         // Blog reader mapping
         blog: () => window.getBlogListOutput ? window.getBlogListOutput() : "\x1b[1;31m[ERROR]: blog module not loaded.\x1b[00m\n",
@@ -61,9 +62,9 @@ document.addEventListener("DOMContentLoaded", () => {
         uname: () => "\nLinux bangzaki-hub 6.8.0-custom-generic #1 SMP PREEMPT_DYNAMIC x86_64 GNU/Linux\n",
         free: () => "\n            total        used        free      shared  buff/cache   available\nMem:         8192MB      1420MB      6100MB        12MB       672MB      6500MB\n[INFO]: RAM is in way better shape than your pathetic lifestyle.\n",
         df: () => "\nFilesystem     1K-blocks      Used Available Use% Mounted on\n/dev/nvme0n1p2 262144000  44850120 217293880  18% /\n[INFO]: Plenty of disk space left to store all your life regrets.\n",
-        ps: () => "\n  PID TTY          TIME CMD\n 1337 tty1      00:00:00 bash\n 4209 tty1      00:02:14 staring_at_screen_blankly\n 8888 tty1      00:05:00 questioning_life_choices\n",
+        ps: () => "\n  PID TTY         TIME CMD\n 1337 tty1      00:00:00 bash\n 4209 tty1      00:02:14 staring_at_screen_blankly\n 8888 tty1      00:05:00 questioning_life_choices\n",
         top: () => "\nTasks: 3 total, 1 running, 2 sleeping. CPU: 0.1% usr. Mem: 17% used.\n[ERROR]: You are not root. You cannot kill your crushing boredom using top.\n",
-        netstat: () => "\nActive Internet connections (w/ servers)\nProto Recv-Q Send-Q Local Address           Foreign Address         State       \ntcp        0      0 127.0.0.1:80            127.0.0.1:54321         ESTABLISHED \n[INFO]: Connection active. Nobody is texting you. Go away.\n",
+        netstat: () => "\nActive Internet connections (w/ servers)\nProto Recv-Q Send-Q Local Address            Foreign Address         State      \ntcp        0      0 127.0.0.1:80             127.0.0.1:54321         ESTABLISHED \n[INFO]: Connection active. Nobody is texting you. Go away.\n",
         ping: (args) => `\nPING ${args && args.length ? args[0] : "8.8.8.8"} (8.8.8.8) 56(84) bytes of data.\n64 bytes from 8.8.8.8: icmp_seq=1 ttl=117 time=14.2 ms\n64 bytes from 8.8.8.8: icmp_seq=2 ttl=117 time=13.8 ms\n[INFO]: Ping successful. Too bad your life connection is permanently timed out.\n`,
         curl: () => "\ncurl: (6) Could not resolve host: nobodycares.com. Stop trying to fetch useless crap.\n",
         wget: () => "\n--2026-09-02 13:55:11--  (try) => Failed: Connection rejected by the entire universe.\n",
@@ -88,9 +89,10 @@ document.addEventListener("DOMContentLoaded", () => {
         return `
 \x1b[1;32mSYSTEM COMMANDS & UTILITIES:\x1b[00m
 
-  \x1b[1;36mls\x1b[00m             : Display directory contents & indexing numbers
+  \x1b[1;36mls\x1b[00m            : Display directory contents & indexing numbers
   \x1b[1;36mblog\x1b[00m           : Display article archives and tech notes
   \x1b[1;36mmedia\x1b[00m          : External asset vault (video, photo, audio, pdf, links)
+  \x1b[1;36mmail <msg>\x1b[00m     : Send direct message via Web3Forms gateway
   \x1b[1;36mcat [file/no]\x1b[00m    : Open file, media, or blog (e.g., 'cat bio', 'cat blog/1', or 'cat 1')
   \x1b[1;36mclear\x1b[00m          : Clear terminal screen
   \x1b[1;31mlogout\x1b[00m         : Terminate active user session
@@ -103,15 +105,47 @@ document.addEventListener("DOMContentLoaded", () => {
         return `
 \x1b[1;32mINDEX  FILENAME     DESCRIPTION\x1b[00m
 ----------------------------------------------------------------------
-  [1]    bio          System ident, core DNA & offscreen habits
-  [2]    skills       Tech stack, infrastructure & capabilities
-  [3]    experience   Career trajectory & heavy industry battle scars
-  [4]    projects     Notable platforms, archives & automated pipelines
-  [5]    contact      Secure comms & direct transmission gateway
-  [6]    media        External asset vault (video, photo, audio, pdf, links)
-  [7]    blog         Tech articles, notes & architectural journals
+  [1]    bio        System ident, core DNA & offscreen habits
+  [2]    skills     Tech stack, infrastructure & capabilities
+  [3]    experience Career trajectory & heavy industry battle scars
+  [4]    projects   Notable platforms, archives & automated pipelines
+  [5]    contact    Secure comms & direct transmission gateway
+  [6]    media      External asset vault (video, photo, audio, pdf, links)
+  [7]    blog       Tech articles, notes & architectural journals
 ----------------------------------------------------------------------
 `;
+    }
+
+    async function handleMailCommand(args) {
+        if (!args || args.length === 0) {
+            return "\x1b[1;31m[ERROR]: Ketik mail 'pesan kamu' (contoh: mail Halo bro)\x1b[00m\n";
+        }
+        const message = args.join(" ");
+        const endpoint = window.contactConfig ? window.contactConfig.endpoint : "https://api.web3forms.com/submit";
+        const accessKey = window.contactConfig ? window.contactConfig.accessKey : "33b1daf3-e755-4d85-b340-97714c283b55";
+
+        try {
+            const response = await fetch(endpoint, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify({
+                    access_key: accessKey,
+                    message: message,
+                    subject: "New Message from omzaki.com Terminal"
+                })
+            });
+            const result = await response.json();
+            if (result.success) {
+                return `\n\x1b[1;32m[OK]: Pesan Berhasil Dikirim!\x1b[00m\nIsi Pesan: "${message}"\n`;
+            } else {
+                return `\n\x1b[1;31m[ERROR]: Gagal kirim - ${result.message}\x1b[00m\n`;
+            }
+        } catch (err) {
+            return `\n\x1b[1;31m[ERROR]: Koneksi API gagal (${err.message}). Cek CORS/domain.\x1b[00m\n`;
+        }
     }
 
     function handleMediaCommand(type) {
@@ -151,28 +185,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const target = args[0].toLowerCase();
         
-        // Cek apakah target mengarah ke blog (misal: "blog/1", "blog/slug", atau langsung string slug/nomor artikel jika di-prefix blog)
         if (target.startsWith("blog/")) {
             const blogParam = target.replace("blog/", "");
             if (window.loadBlogPost) {
-                // Return async function result via wrapper or handle directly if synchronous text
-                // loadBlogPost returns a promise resolving to string or handling modal
                 window.loadBlogPost(blogParam);
                 return `\n\x1b[1;32m[OK]: Membuka buffer artikel blog '${blogParam}'...\x1b[00m\n`;
             }
             return "\x1b[1;31m[ERROR]: blog reader module not loaded.\x1b[00m\n";
         }
 
-        // Cek apakah target ada di commands utama (bio, skills, experience, projects, contact, media, dll)
         if (commands[target] && typeof commands[target] === "function" && target !== "cat" && target !== "help" && target !== "ls") {
             const subArgs = args.slice(1);
             const res = commands[target](subArgs);
             return res;
         }
 
-        // Jika berupa angka atau slug artikel langsung (misal 'cat melampaui-halusinasi-algoritma' atau 'cat 1')
         if (window.loadBlogPost && (!isNaN(target) || target.length > 2)) {
-            // Cek apakah target valid sebagai index/slug blog atau module biasa
             window.loadBlogPost(target);
             return `\n\x1b[1;32m[OK]: Membuka buffer artikel/file '${target}'...\x1b[00m\n`;
         }
@@ -180,7 +208,6 @@ document.addEventListener("DOMContentLoaded", () => {
         return `\x1b[1;31m[ERROR]: file not found: ${target}. Learn how to spell.\x1b[00m\n`;
     }
 
-    // Punishment Logic Functions
     function checkPunishment(cmd) {
         const now = Date.now();
         if (now - lastCommandTime < 400) {
@@ -242,7 +269,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 4000);
     }
 
-    // Trap Handlers (Lazy & Rude English)
     function handleSudoCommand(args) {
         setTimeout(() => { outputDiv.innerHTML += ansiToHtml("\x1b[0;33m[*] Authenticating your pathetic existence...\x1b[00m\n"); outputDiv.scrollTop = outputDiv.scrollHeight; }, 600);
         setTimeout(() => { outputDiv.innerHTML += ansiToHtml("\x1b[1;31m[CRITICAL ERROR]: Unauthorized. You ain't root, buddy.\x1b[00m\n"); outputDiv.scrollTop = outputDiv.scrollHeight; }, 1300);
@@ -305,9 +331,9 @@ guest:x:666:666:Lazy bum typing random cat commands:/home/guest:/bin/false
 
     function printBanner() {
         const banner = `
-\x1b[1;36mHost:\x1b[00m bangzaki.hub (x86_64-pc-linux-gnu)    \x1b[1;36mClient IP:\x1b[00m 158.140.173.118
+\x1b[1;36mHost:\x1b[00m bangzaki.hub (x86_64-pc-linux-gnu)     \x1b[1;36mClient IP:\x1b[00m 158.140.173.118
 \x1b[1;36mUptime:\x1b[00m 214 days, 6 hours     \x1b[1;36mCPU Load:\x1b[00m 1.2% (4 Cores)
-\x1b[1;36mRAM Usage:\x1b[00m 1.4GB / 8.0GB        \x1b[1;36mDisk Storage:\x1b[00m 42.8GB / 250GB
+\x1b[1;36mRAM Usage:\x1b[00m 1.4GB / 8.0GB         \x1b[1;36mDisk Storage:\x1b[00m 42.8GB / 250GB
 ----------------------------------------------------------------------
  \x1b[1;33mSTATUS:\x1b[00m Systems nominal, stop wasting my time.
  \x1b[1;33mINFO:\x1b[00m Type \x1b[1;32mhelp\x1b[00m if you're too blind to read.
@@ -358,7 +384,6 @@ User: \x1b[1;32mguest\x1b[00m - pass: \x1b[1;32mguest123\x1b[00m
 
         if (!trimmed) return;
 
-        // Cek sistem hukuman sebelum command diproses
         if (checkPunishment(trimmed)) return;
 
         outputDiv.innerHTML += `\n<span class="prompt-echo">guest@bangzaki.hub:~#</span> ${escapeHtml(trimmed)}\n`;
@@ -368,7 +393,7 @@ User: \x1b[1;32mguest\x1b[00m - pass: \x1b[1;32mguest123\x1b[00m
         const args = parts.slice(1);
 
         if (commands[cmd]) {
-            const res = typeof commands[cmd] === "function" ? commands[cmd](args) : commands[cmd];
+            const res = typeof commands[cmd] === "function" ? await commands[cmd](args) : commands[cmd];
             if (res) outputDiv.innerHTML += ansiToHtml(res);
         } else {
             outputDiv.innerHTML += ansiToHtml(`\x1b[1;31m[ERROR]: command not found: ${trimmed}. Type 'help' if you're completely clueless.\x1b[00m\n`);
