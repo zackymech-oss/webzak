@@ -3,9 +3,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const outputDiv = document.getElementById("output");
     const commandInput = document.getElementById("command-input");
 
-    // State login terminal
+    // Terminal authentication state
     let isLoggedIn = false;
-    let authStep = "user"; // "user", "pass", atau "active"
+    let authStep = "user"; // "user", "pass", or "active"
     let tempUser = "";
 
     const commands = {
@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
             authStep = "user";
             tempUser = "";
             document.querySelector(".prompt").textContent = "login:";
-            return "\n\x1b[1;33m[LOGOUT]: Sesi diakhiri. Silakan login kembali.\x1b[0m\nUser: ";
+            return "\n\x1b[1;33m[LOGOUT]: Session terminated. Please log in again.\x1b[0m\nUser: ";
         }
     };
 
@@ -45,13 +45,13 @@ document.addEventListener("DOMContentLoaded", () => {
         return `
 \x1b[1;32mSYSTEM COMMANDS & UTILITIES:\x1b[0m
 
-  \x1b[1;36mls\x1b[0m             : Menampilkan isi folder & penomoran
+  \x1b[1;36mls\x1b[0m             : Display directory contents & indexing numbers
   \x1b[1;36mmedia\x1b[0m          : External asset vault (video, photo, audio, pdf, links)
-  \x1b[1;36mcat [file/no]\x1b[0m  : Membuka file atau media (cth: 'cat bio', 'cat video', atau 'cat 1')
-  \x1b[1;36mclear\x1b[0m          : Membersihkan layar terminal
-  \x1b[1;31mlogout\x1b[0m         : Keluar dari sesi user aktif
+  \x1b[1;36mcat [file/no]\x1b[0m  : Open file or media (e.g., 'cat bio', 'cat video', or 'cat 1')
+  \x1b[1;36mclear\x1b[0m          : Clear terminal screen
+  \x1b[1;31mlogout\x1b[0m         : Terminate active user session
 
-\x1b[90mTip: Gunakan shortcut langsung misal ketik 'video', 'photo', 'audio', 'pdf', 'links'.\x1b[0m
+\x1b[90mTip: Use direct shortcuts like typing 'video', 'photo', 'audio', 'pdf', 'links'.\x1b[0m
 `;
     }
 
@@ -68,7 +68,8 @@ document.addEventListener("DOMContentLoaded", () => {
 ----------------------------------------------------------------------
 `;
     }
-function handleMediaCommand(type) {
+
+    function handleMediaCommand(type) {
         if (window.getMediaElement) {
             const el = window.getMediaElement(type);
             if (el) {
@@ -86,7 +87,6 @@ function handleMediaCommand(type) {
                 container.appendChild(header);
                 container.appendChild(body);
 
-                // Langsung append ke container output aktif
                 const outputArea = document.getElementById("output");
                 if (outputArea) {
                     outputArea.appendChild(container);
@@ -97,7 +97,7 @@ function handleMediaCommand(type) {
             }
         }
         return "\x1b[1;31m[ERROR]: Media target not found.\x1b[0m\n";
-}
+    }
 
     function ansiToHtml(text) {
         if (!text) return "";
@@ -118,11 +118,18 @@ function handleMediaCommand(type) {
 
     function printBanner() {
         const banner = `
-\x1b[1;36mHost:\x1b[0m bangzaki.hub (x86_64)   \x1b[1;36mClient IP:\x1b[0m 158.140.173.118
+\x1b[1;36mHost:\x1b[0m bangzaki.hub (x86_64-pc-linux-gnu)   \x1b[1;36mClient IP:\x1b[0m 158.140.173.118
 \x1b[1;36mUptime:\x1b[0m 214 days, 6 hours     \x1b[1;36mCPU Load:\x1b[0m 1.2% (4 Cores)
 \x1b[1;36mRAM Usage:\x1b[0m 1.4GB / 8.0GB       \x1b[1;36mDisk Storage:\x1b[0m 42.8GB / 250GB
 ----------------------------------------------------------------------
-Silakan login untuk mengakses server:
+ \x1b[1;33mSTATUS:\x1b[0m Systems nominal, chill for a bit, bro..
+ \x1b[1;33mINFO:\x1b[0m Type \x1b[1;32mhelp\x1b[0m if you're lost.
+ \x1b[1;31mNOTE:\x1b[0m What are you even doing here? Is your life 
+       that boring, or is talking to an AI chatbot not 
+       enough for your emptiness? Make sure you actually 
+       understand and are damn sure what you're doing here.
+----------------------------------------------------------------------
+Wanna try? use this:
 User: \x1b[1;32mguest\x1b[0m - pass: \x1b[1;32mguest123\x1b[0m
 `;
         outputDiv.innerHTML += ansiToHtml(banner);
@@ -132,7 +139,6 @@ User: \x1b[1;32mguest\x1b[0m - pass: \x1b[1;32mguest123\x1b[0m
     async function processCommand(rawInput) {
         const trimmed = rawInput.trim();
 
-        // Handle Login Flow jika belum login
         if (!isLoggedIn) {
             if (authStep === "user") {
                 outputDiv.innerHTML += `\n<span class="prompt-echo">user:</span> ${escapeHtml(trimmed)}\n`;
@@ -141,22 +147,21 @@ User: \x1b[1;32mguest\x1b[0m - pass: \x1b[1;32mguest123\x1b[0m
                     authStep = "pass";
                     document.querySelector(".prompt").textContent = "pass:";
                 } else {
-                    outputDiv.innerHTML += ansiToHtml(`\x1b[1;31m[AUTH ERROR]: User tidak ditemukan. Gunakan 'guest'.\x1b[0m\n\nUser: `);
+                    outputDiv.innerHTML += ansiToHtml(`\x1b[1;31m[AUTH ERROR]: User not found. Use 'guest'.\x1b[0m\n\nUser: `);
                 }
             } else if (authStep === "pass") {
-                // Sembunyikan password saat di-echo di layar
                 outputDiv.innerHTML += `\n<span class="prompt-echo">pass:</span> *****\n`;
                 if (tempUser === "guest" && trimmed === "guest123") {
                     isLoggedIn = true;
                     authStep = "active";
                     document.querySelector(".prompt").textContent = "guest@bangzaki.hub:~#";
                     const successMsg = `
-\x1b[1;32mAccess granted! Selamat datang di bangzaki.hub.\x1b[0m
-Ketik \x1b[1;36mhelp\x1b[0m untuk panduan perintah.
+\x1b[1;32mAccess granted!\x1b[0m
+Good luck!.
 `;
                     outputDiv.innerHTML += ansiToHtml(successMsg);
                 } else {
-                    outputDiv.innerHTML += ansiToHtml(`\x1b[1;31m[AUTH ERROR]: Password salah. Coba lagi.\x1b[0m\n\nUser: `);
+                    outputDiv.innerHTML += ansiToHtml(`\x1b[1;31m[AUTH ERROR]: Incorrect password. Try again.\x1b[0m\n\nUser: `);
                     authStep = "user";
                     tempUser = "";
                     document.querySelector(".prompt").textContent = "user:";
@@ -166,7 +171,6 @@ Ketik \x1b[1;36mhelp\x1b[0m untuk panduan perintah.
             return;
         }
 
-        // Kalau sudah login, jalankan command normal
         if (!trimmed) return;
         outputDiv.innerHTML += `\n<span class="prompt-echo">guest@bangzaki.hub:~#</span> ${escapeHtml(trimmed)}\n`;
 
@@ -198,7 +202,7 @@ Ketik \x1b[1;36mhelp\x1b[0m untuk panduan perintah.
             commandInput.value = "";
             await processCommand(val);
         }
-    });       
+    });      
 
     document.addEventListener("click", () => {
         commandInput.focus();

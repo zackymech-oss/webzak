@@ -97,6 +97,7 @@ body::before {
     line-height: 1.6;
     white-space: pre-wrap;
     word-break: break-word;
+    overflow-wrap: break-word;
     color: #c9d1d9;
 }
 
@@ -123,7 +124,7 @@ body::before {
 .prompt {
     color: #50fa7b;
     font-weight: bold;
-    margin-right: 10px;
+    margin-right: 8px;
     white-space: nowrap;
 }
 
@@ -241,6 +242,9 @@ body::before {
     background: rgba(16, 22, 34, 0.95);
     overflow: hidden;
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    white-space: pre-wrap;
+    word-break: break-word;
+    box-sizing: border-box;
 }
 
 .media-window-header {
@@ -267,6 +271,7 @@ body::before {
 .media-img-wrapper img { width: 100%; height: auto; border-radius: 4px; display: block; }
 .media-audio-wrapper audio { width: 100%; outline: none; }
 
+/* Tablet & Standard Mobile (max-width: 768px) */
 @media screen and (max-width: 768px) {
     html, body {
         width: 100%;
@@ -294,5 +299,113 @@ body::before {
         display: flex !important;
         flex-direction: column !important;
         margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    #output {
+        white-space: pre-wrap;
+        word-break: break-word;
+        overflow-wrap: break-word;
+        box-sizing: border-box;
+        padding: 12px;
+        font-size: 12px;
+    }
+
+    .window-header {
+        font-size: 11px;
+    }
+
+    .input-line {
+        padding: 10px 12px;
+    }
+
+    .media-iframe-wrapper {
+        padding-bottom: 75%;
+    }
+
+    .terminal-media-container {
+        margin: 10px 0;
+        white-space: pre-wrap;
+        word-break: break-word;
+        box-sizing: border-box;
+    }
+}
+
+/* Compact Smartphones (iPhone SE, Galaxy Fold outer screen - max-width: 380px) */
+@media screen and (max-width: 380px) {
+    #output {
+        padding: 8px;
+        font-size: 11px;
+        line-height: 1.4;
+    }
+
+    .window-header {
+        height: 30px;
+        padding: 0 8px;
+    }
+
+    .window-title {
+        font-size: 10px;
+        letter-spacing: 0px;
+    }
+
+    .dot {
+        width: 9px;
+        height: 9px;
+    }
+
+    .window-dots {
+        gap: 5px;
+    }
+
+    .input-line {
+        padding: 8px 10px;
+    }
+
+    .prompt {
+        font-size: 11px;
+        margin-right: 5px;
+    }
+
+    #command-input {
+        font-size: 11px;
+    }
+
+    .dino-modal {
+        padding: 12px;
+        width: 95%;
+    }
+
+    #dinoCanvas {
+        height: 120px;
+    }
+}
+
+/* Ultra-Compact / Foldable Devices Inner/Outer Cover (max-width: 320px) */
+@media screen and (max-width: 320px) {
+    #output {
+        padding: 6px;
+        font-size: 10px;
+    }
+
+    .window-header {
+        height: 26px;
+        padding: 0 6px;
+    }
+
+    .window-title {
+        display: none; /* Sembunyikan judul window jika layar terlalu sempit agar tidak nabrak titik window control */
+    }
+
+    .input-line {
+        padding: 6px 8px;
+    }
+
+    .prompt {
+        font-size: 10px;
+    }
+
+    #command-input {
+        font-size: 10px;
     }
 }
