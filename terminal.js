@@ -68,21 +68,31 @@ document.addEventListener("DOMContentLoaded", () => {
 ----------------------------------------------------------------------
 `;
     }
-
 function handleMediaCommand(type) {
         if (window.getMediaElement) {
             const el = window.getMediaElement(type);
             if (el) {
-                // Atur gaya elemen biar lepek dan pas selebar terminal
-                el.style.cssText = "width: 100%; max-width: 100%; margin: 10px 0; border-radius: 4px; display: block;";
-                
-                // Konversi elemen jadi string HTML buat dimasukin lgsg ke output terminal
+                const container = document.createElement("div");
+                container.className = "terminal-media-container";
+
+                const header = document.createElement("div");
+                header.className = "media-window-header";
+                header.innerHTML = `<span>MEDIA BUFFER // ${type.toUpperCase()}</span><span class="close-media" onclick="this.closest('.terminal-media-container').remove()">[X CLOSE]</span>`;
+
+                const body = document.createElement("div");
+                body.className = "media-body";
+                body.appendChild(el);
+
+                container.appendChild(header);
+                container.appendChild(body);
+
+                // Konversi elemen DOM ke string HTML buat stream terminal
                 const wrapper = document.createElement("div");
-                wrapper.appendChild(el);
-                return "\x1b[1;32m[OK]: Output buffer stream attached.\x1b[0m\n" + wrapper.innerHTML + "\n";
+                wrapper.appendChild(container);
+                return "\x1b[1;32m[OK]: Media stream attached to buffer.\x1b[0m\n" + wrapper.innerHTML + "\n";
             }
         }
-        return "\x1b[1;31m[ERROR]: Media stream not found.\x1b[0m\n";
+        return "\x1b[1;31m[ERROR]: Media target not found.\x1b[0m\n";
 }
 
     function ansiToHtml(text) {
