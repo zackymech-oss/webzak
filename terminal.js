@@ -86,10 +86,14 @@ function handleMediaCommand(type) {
                 container.appendChild(header);
                 container.appendChild(body);
 
-                // Konversi elemen DOM ke string HTML buat stream terminal
-                const wrapper = document.createElement("div");
-                wrapper.appendChild(container);
-                return "\x1b[1;32m[OK]: Media stream attached to buffer.\x1b[0m\n" + wrapper.innerHTML + "\n";
+                // Langsung append ke container output aktif
+                const outputArea = document.getElementById("output");
+                if (outputArea) {
+                    outputArea.appendChild(container);
+                    outputArea.scrollTop = outputArea.scrollHeight;
+                }
+
+                return "\x1b[1;32m[OK]: Media stream attached to buffer.\x1b[0m\n";
             }
         }
         return "\x1b[1;31m[ERROR]: Media target not found.\x1b[0m\n";
